@@ -17,38 +17,40 @@ Use this skill only when the user explicitly asks to commit and/or push.
 
 ## Steps
 
-1. Review repository state.
+1. Run pre-push timestamp preparation first by invoking the `pre-push-datetimetimestamp` custom agent.
+
+2. Review repository state.
 
 ```bash
 git status --short --branch
 ```
 
-2. Show what will be committed.
+3. Show what will be committed.
 
 ```bash
 git diff -- .
 git diff --staged -- .
 ```
 
-3. Stage only intended files. If user did not specify files, stage all current changes.
+4. Stage only intended files. If user did not specify files, stage all current changes.
 
 ```bash
 git add -A
 ```
 
-4. Commit with a clear message. If user did not provide one, generate a concise message describing the actual changes.
+5. Commit with a clear message. If user did not provide one, generate a concise message describing the actual changes.
 
 ```bash
 git commit -m "<message>"
 ```
 
-5. Push to main branch.
+6. Push to main branch.
 
 ```bash
 git push origin main
 ```
 
-6. If push is rejected due to remote changes, reconcile safely and retry.
+7. If push is rejected due to remote changes, reconcile safely and retry.
 
 ```bash
 git fetch origin
@@ -56,7 +58,7 @@ git pull --rebase origin main
 git push origin main
 ```
 
-7. Report back with:
+8. Report back with:
 - Committed files
 - Commit hash and message
 - Push target and result
