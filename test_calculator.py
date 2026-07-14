@@ -51,6 +51,10 @@ class TestCalculatorOperations(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.calc.factorial(4.2)  # type: ignore[arg-type]
 
+    def test_factorial_bool_raises(self) -> None:
+        with self.assertRaises(TypeError):
+            self.calc.factorial(True)  # type: ignore[arg-type]
+
     def test_trigonometry(self) -> None:
         self.assertAlmostEqual(self.calc.sin(math.pi / 2), 1.0, places=7)
         self.assertAlmostEqual(self.calc.cos(0), 1.0, places=7)

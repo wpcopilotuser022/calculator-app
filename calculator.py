@@ -51,7 +51,7 @@ class Calculator:
         return math.sqrt(value)
 
     def factorial(self, n: int) -> int:
-        if not isinstance(n, int):
+        if isinstance(n, bool) or not isinstance(n, int):
             raise TypeError("Factorial is defined only for integers")
         if n < 0:
             raise ValueError("Factorial is not defined for negative integers")
