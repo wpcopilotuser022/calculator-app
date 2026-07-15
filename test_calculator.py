@@ -2,6 +2,18 @@ import math
 import unittest
 
 from calculator import Calculator, CalculatorError
+from calculator_ui import CalculatorUI
+
+
+class DummyVar:
+    def __init__(self, value: str = "") -> None:
+        self._value = value
+
+    def get(self) -> str:
+        return self._value
+
+    def set(self, value: str) -> None:
+        self._value = value
 
 
 class TestCalculatorOperations(unittest.TestCase):
@@ -107,6 +119,50 @@ class TestExpressionEvaluation(unittest.TestCase):
     def test_expression_unknown_function_rejected(self) -> None:
         with self.assertRaises(CalculatorError):
             self.calc.evaluate_expression("eval('2+2')")
+
+    def test_expression_keyword_arguments_rejected(self) -> None:
+        with self.assertRaises(CalculatorError):
+            self.calc.evaluate_expression("log(100, base=10)")
+
+
+class TestCalculatorUIBehavior(unittest.TestCase):
+    def setUp(self) -> None:
+        self.ui = CalculatorUI.__new__(CalculatorUI)
+        self.ui.calculator = Calculator()
+        self.ui.expression_var = DummyVar()
+        self.ui.result_var = DummyVar("Result: 0")
+        self.ui.error_var = DummyVar("")
+
+    def test_evaluate_empty_expression_sets_user_friendly_error(self) -> None:
+        self.ui._evaluate()
+        self.assertEqual(self.ui.result_var.get(), "Result: 0")
+        self.assertEqual(self.ui.error_var.get(), "Enter an expression to evaluate")
+
+    def test_evaluate_valid_expression_updates_result_and_clears_error(self) -> None:
+        self.ui.expression_var.set("2 + 3 * 4")
+        self.ui.error_var.set("old error")
+        self.ui._evaluate()
+        self.assertEqual(self.ui.result_var.get(), "Result: 14")
+        self.assertEqual(self.ui.error_var.get(), "")
+
+    def test_evaluate_invalid_expression_sets_error_result(self) -> None:
+        self.ui.expression_var.set("10 / 0")
+        self.ui._evaluate()
+        self.assertEqual(self.ui.result_var.get(), "Result: Error")
+        self.assertIn("zero", self.ui.error_var.get().lower())
+
+    def test_button_press_maps_scientific_tokens(self) -> None:
+        self.ui._on_button_press("sqrt")
+        self.assertEqual(self.ui.expression_var.get(), "sqrt(")
+
+    def test_clear_resets_ui_state(self) -> None:
+        self.ui.expression_var.set("1+2")
+        self.ui.result_var.set("Result: 3")
+        self.ui.error_var.set("error")
+        self.ui._clear()
+        self.assertEqual(self.ui.expression_var.get(), "")
+        self.assertEqual(self.ui.result_var.get(), "Result: 0")
+        self.assertEqual(self.ui.error_var.get(), "")
 
 
 if __name__ == "__main__":

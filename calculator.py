@@ -140,6 +140,8 @@ class Calculator:
         if isinstance(node, ast.Call):
             if not isinstance(node.func, ast.Name):
                 raise CalculatorError("Only direct function calls are allowed")
+            if node.keywords:
+                raise CalculatorError("Keyword arguments are not allowed")
             func_name = node.func.id
             if func_name not in allowed_funcs:
                 raise CalculatorError(f"Function not allowed: {func_name}")
